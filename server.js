@@ -10,7 +10,7 @@ app.get("/", (req, res) => {
   if (Date.now() - lastTimestamp > 10_000) {
     lastTimestamp = Date.now();
     console.log("Request processed");
-    exec("node index.js");
+    exec("node index.js").stdout.pipe(process.stdout);
     res.sendStatus(200);
   } else {
     res.sendStatus(429);
