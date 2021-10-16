@@ -28,6 +28,8 @@ const fetch = require("sync-fetch");
     if (!fs.existsSync("homebrew-tap"))
       exec("git clone git@github.com:khanhas/homebrew-tap");
     const hGit = simpleGit({ baseDir: "homebrew-tap" });
+    await hGit.reset("hard", ["origin/master"]);
+    await hGit.pull();
     let rb = fs.readFileSync("homebrew-tap/spicetify-cli.rb").toString();
     const versionPattern =
       /(?<=url "https:\/\/github.com\/khanhas\/spicetify-cli\/archive\/)v\d\.\d\.\d\.tar\.gz(?=")/g;
@@ -59,12 +61,15 @@ const fetch = require("sync-fetch");
     await hGit.add("spicetify-cli.rb");
     await hGit.commit(`Update to ${version}`);
     await hGit.push("origin", "master");
+    console.log("Homebrew done");
   };
 
   const updateAUR = async (version, filename, hex) => {
     if (!fs.existsSync("spicetify-cli"))
       exec("git clone ssh://aur@aur.archlinux.org/spicetify-cli.git");
     const aGit = simpleGit({ baseDir: "spicetify-cli" });
+    await aGit.reset("hard", ["origin/master"]);
+    await aGit.pull();
     let pkgbuild = fs.readFileSync("spicetify-cli/PKGBUILD").toString();
     let srcinfo = fs.readFileSync("spicetify-cli/.SRCINFO").toString();
     const pkgVerPattern = /(?<=pkgver ?= ?)\d\.\d\.\d/g;
@@ -116,11 +121,11 @@ const fetch = require("sync-fetch");
     await aGit.add("PKGBUILD");
     await aGit.commit(`bump: v${version}`);
     await aGit.push("origin", "master");
+    console.log("AUR done");
   };
 
   console.log("Updating homebrew...");
   updateHomebrew(version, filename, hex);
   console.log("Updating AUR...");
   updateAUR(version, filename, hex);
-  console.log("Done!");
 })();
