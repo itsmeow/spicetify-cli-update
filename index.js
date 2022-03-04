@@ -5,13 +5,13 @@ const simpleGit = require("simple-git");
 const fetch = require("sync-fetch");
 (async () => {
   const version = fetch(
-    "https://api.github.com/repos/khanhas/spicetify-cli/tags"
+    "https://api.github.com/repos/spicetify/spicetify-cli/tags"
   )
     .json()[0]
     .name.substring(1);
   let filename = `v${version}`;
   exec(
-    `curl -Ls https://codeload.github.com/khanhas/spicetify-cli/tar.gz/${filename} --output ${filename}.tar.gz`
+    `curl -Ls https://codeload.github.com/spicetify/spicetify-cli/tar.gz/${filename} --output ${filename}.tar.gz`
   );
   filename += ".tar.gz";
   console.log("Downloaded", filename);
@@ -32,7 +32,7 @@ const fetch = require("sync-fetch");
     await hGit.pull();
     let rb = fs.readFileSync("homebrew-tap/spicetify-cli.rb").toString();
     const versionPattern =
-      /(?<=url "https:\/\/github.com\/khanhas\/spicetify-cli\/archive\/)v\d\.\d\.\d\.tar\.gz(?=")/g;
+      /(?<=url "https:\/\/github.com\/spicetify\/spicetify-cli\/archive\/)v\d\.\d\.\d\.tar\.gz(?=")/g;
     const shaPattern = /(?<=sha256 ")[0-9a-f]+(?=")/g;
     if (differs(shaPattern, rb, hex)) {
       console.log("Identical SHA256", hex);
@@ -41,7 +41,7 @@ const fetch = require("sync-fetch");
     if (differs(versionPattern, rb, filename)) {
       console.log(
         "Identical URL",
-        "https://github.com/khanhas/spicetify-cli/archive/" + filename
+        "https://github.com/spicetify/spicetify-cli/archive/" + filename
       );
       return;
     }
@@ -74,7 +74,7 @@ const fetch = require("sync-fetch");
     let srcinfo = fs.readFileSync("spicetify-cli/.SRCINFO").toString();
     const pkgVerPattern = /(?<=pkgver ?= ?)\d\.\d\.\d/g;
     const sourcePattern =
-      /(?<=source ?= ?https:\/\/github.com\/khanhas\/spicetify-cli\/archive\/)v\d\.\d\.\d\.tar\.gz/g;
+      /(?<=source ?= ?https:\/\/github.com\/spicetify\/spicetify-cli\/archive\/)v\d\.\d\.\d\.tar\.gz/g;
     const sha256sumsPattern = /(?<=sha256sums ?= ?(\(')?)[0-9a-f]+(?=('\))?)/g;
     if (
       differs(sha256sumsPattern, pkgbuild, hex) ||
@@ -93,7 +93,7 @@ const fetch = require("sync-fetch");
     if (differs(sourcePattern, srcinfo, filename)) {
       console.log(
         "Identical URL",
-        "https://github.com/khanhas/spicetify-cli/archive/" + filename
+        "https://github.com/spicetify/spicetify-cli/archive/" + filename
       );
       return;
     }
