@@ -32,7 +32,7 @@ const fetch = require("sync-fetch");
     await hGit.pull();
     let rb = fs.readFileSync("homebrew-tap/spicetify-cli.rb").toString();
     const versionPattern =
-      /(?<=url "https:\/\/github.com\/spicetify\/spicetify-cli\/archive\/)v\d\.\d\.\d\.tar\.gz(?=")/g;
+      /(?<=url "https:\/\/github.com\/spicetify\/spicetify-cli\/archive\/)v\d+\.\d+\.\d+\.tar\.gz(?=")/g;
     const shaPattern = /(?<=sha256 ")[0-9a-f]+(?=")/g;
     if (differs(shaPattern, rb, hex)) {
       console.log("Identical SHA256", hex);
