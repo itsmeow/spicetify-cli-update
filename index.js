@@ -74,7 +74,7 @@ const fetch = require("sync-fetch");
     let srcinfo = fs.readFileSync("spicetify-cli/.SRCINFO").toString();
     const pkgVerPattern = /(?<=pkgver ?= ?)\d\.\d\.\d/g;
     const sourcePattern =
-      /(?<=source ?= ?https:\/\/github.com\/spicetify\/spicetify-cli\/archive\/)v\d\.\d\.\d\.tar\.gz/g;
+      /(?<=source ?= ?https:\/\/github.com\/spicetify\/spicetify-cli\/archive\/)v\d+\.\d+\.\d+\.tar\.gz/g;
     const sha256sumsPattern = /(?<=sha256sums ?= ?(\(')?)[0-9a-f]+(?=('\))?)/g;
     if (
       differs(sha256sumsPattern, pkgbuild, hex) ||
