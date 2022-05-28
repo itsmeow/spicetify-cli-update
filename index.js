@@ -72,7 +72,7 @@ const fetch = require("sync-fetch");
     await aGit.pull();
     let pkgbuild = fs.readFileSync("spicetify-cli/PKGBUILD").toString();
     let srcinfo = fs.readFileSync("spicetify-cli/.SRCINFO").toString();
-    const pkgVerPattern = /(?<=pkgver ?= ?)\d\.\d\.\d/g;
+    const pkgVerPattern = /(?<=pkgver ?= ?)\d+\.\d+\.\d+/g;
     const sourcePattern =
       /(?<=source ?= ?https:\/\/github.com\/spicetify\/spicetify-cli\/archive\/)v\d+\.\d+\.\d+\.tar\.gz/g;
     const sha256sumsPattern = /(?<=sha256sums ?= ?(\(')?)[0-9a-f]+(?=('\))?)/g;
