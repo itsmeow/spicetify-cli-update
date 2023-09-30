@@ -23,47 +23,7 @@ const fetch = require("sync-fetch");
   const differs = (pattern, file, match) => {
     return file.match(pattern)[0] === match;
   };
-
-  const updateHomebrew = async (version, filename, hex) => {
-    if (!fs.existsSync("homebrew-tap"))
-      exec("git clone git@github.com:khanhas/homebrew-tap");
-    const hGit = simpleGit({ baseDir: "homebrew-tap" });
-    await hGit.reset("hard", ["origin/master"]);
-    await hGit.pull();
-    let rb = fs.readFileSync("homebrew-tap/spicetify-cli.rb").toString();
-    const versionPattern =
-      /(?<=url "https:\/\/github.com\/spicetify\/spicetify-cli\/archive\/)v\d+\.\d+\.\d+\.tar\.gz(?=")/g;
-    const shaPattern = /(?<=sha256 ")[0-9a-f]+(?=")/g;
-    if (differs(shaPattern, rb, hex)) {
-      console.log("Identical SHA256", hex);
-      return;
-    }
-    if (differs(versionPattern, rb, filename)) {
-      console.log(
-        "Identical URL",
-        "https://github.com/spicetify/spicetify-cli/archive/" + filename
-      );
-      return;
-    }
-    rb = rb.replace(versionPattern, filename);
-    rb = rb.replace(shaPattern, hex);
-    fs.writeFileSync("homebrew-tap/spicetify-cli.rb", rb);
-    const status = await hGit.status();
-    if (
-      status.modified[0] !== "spicetify-cli.rb" ||
-      status.modified.length !== 1
-    ) {
-      console.log(
-        "Git state of homebrew-tap differs from expected value! Try deleting the folder."
-      );
-      return;
-    }
-    await hGit.add("spicetify-cli.rb");
-    await hGit.commit(`Update to ${version}`);
-    await hGit.push("origin", "master");
-    console.log("Homebrew done");
-  };
-
+  
   const updateAUR = async (version, filename, hex) => {
     if (!fs.existsSync("spicetify-cli"))
       exec("git clone ssh://aur@aur.archlinux.org/spicetify-cli.git");
@@ -74,7 +34,7 @@ const fetch = require("sync-fetch");
     let srcinfo = fs.readFileSync("spicetify-cli/.SRCINFO").toString();
     const pkgVerPattern = /(?<=pkgver ?= ?)\d+\.\d+\.\d+/g;
     const sourcePattern =
-      /(?<=source ?= ?https:\/\/github.com\/spicetify\/spicetify-cli\/archive\/)v\d+\.\d+\.\d+\.tar\.gz/g;
+      /source ?= ?spicetify-cli-\d+\.\d+\.\d+\.tar\.gz::https:\/\/github.com\/spicetify\/spicetify-cli\/archive\/v\d+\.\d+\.\d+\.tar\.gz/g;
     const sha256sumsPattern = /(?<=sha256sums ?= ?(\(')?)[0-9a-f]+(?=('\))?)/g;
     if (
       differs(sha256sumsPattern, pkgbuild, hex) ||
@@ -90,7 +50,7 @@ const fetch = require("sync-fetch");
       console.log("Identical version", version);
       return;
     }
-    if (differs(sourcePattern, srcinfo, filename)) {
+    if (differs(sourcePattern, srcinfo, `source = spicetify-cli-${version}.tar.gz::https://github.com/spicetify/spicetify-cli/archive/${filename}`)) {
       console.log(
         "Identical URL",
         "https://github.com/spicetify/spicetify-cli/archive/" + filename
@@ -101,7 +61,7 @@ const fetch = require("sync-fetch");
     pkgbuild = pkgbuild.replace(pkgVerPattern, version);
     srcinfo = srcinfo.replace(sha256sumsPattern, hex);
     srcinfo = srcinfo.replace(pkgVerPattern, version);
-    srcinfo = srcinfo.replace(sourcePattern, filename);
+    srcinfo = srcinfo.replace(sourcePattern, `source = spicetify-cli-${version}.tar.gz::https://github.com/spicetify/spicetify-cli/archive/${filename}`);
     fs.writeFileSync("spicetify-cli/PKGBUILD", pkgbuild);
     fs.writeFileSync("spicetify-cli/.SRCINFO", srcinfo);
     const status = await aGit.status();
@@ -124,8 +84,6 @@ const fetch = require("sync-fetch");
     console.log("AUR done");
   };
 
-  console.log("Updating homebrew...");
-  updateHomebrew(version, filename, hex);
   console.log("Updating AUR...");
   updateAUR(version, filename, hex);
 })();
