@@ -5,13 +5,13 @@ const simpleGit = require("simple-git");
 const fetch = require("sync-fetch");
 (async () => {
   const version = fetch(
-    "https://api.github.com/repos/spicetify/spicetify-cli/tags"
+    "https://api.github.com/repos/spicetify/cli/tags"
   )
     .json()[0]
     .name.substring(1);
   let filename = `v${version}`;
   exec(
-    `curl -Ls https://codeload.github.com/spicetify/spicetify-cli/tar.gz/${filename} --output ${filename}.tar.gz`
+    `curl -Ls https://codeload.github.com/spicetify/cli/tar.gz/${filename} --output ${filename}.tar.gz`
   );
   filename += ".tar.gz";
   console.log("Downloaded", filename);
@@ -34,7 +34,7 @@ const fetch = require("sync-fetch");
     let srcinfo = fs.readFileSync("spicetify-cli/.SRCINFO").toString();
     const pkgVerPattern = /(?<=pkgver ?= ?)\d+\.\d+\.\d+/g;
     const sourcePattern =
-      /source ?= ?spicetify-cli-\d+\.\d+\.\d+\.tar\.gz::https:\/\/github.com\/spicetify\/spicetify-cli\/archive\/v\d+\.\d+\.\d+\.tar\.gz/g;
+      /source ?= ?cli-\d+\.\d+\.\d+\.tar\.gz::https:\/\/github.com\/spicetify\/cli\/archive\/v\d+\.\d+\.\d+\.tar\.gz/g;
     const sha256sumsPattern = /(?<=sha256sums ?= ?(\(')?)[0-9a-f]+(?=('\))?)/g;
     if (
       differs(sha256sumsPattern, pkgbuild, hex) ||
@@ -50,10 +50,10 @@ const fetch = require("sync-fetch");
       console.log("Identical version", version);
       return;
     }
-    if (differs(sourcePattern, srcinfo, `source = spicetify-cli-${version}.tar.gz::https://github.com/spicetify/spicetify-cli/archive/${filename}`)) {
+    if (differs(sourcePattern, srcinfo, `source = cli-${version}.tar.gz::https://github.com/spicetify/cli/archive/${filename}`)) {
       console.log(
         "Identical URL",
-        "https://github.com/spicetify/spicetify-cli/archive/" + filename
+        "https://github.com/spicetify/cli/archive/" + filename
       );
       return;
     }
@@ -61,7 +61,7 @@ const fetch = require("sync-fetch");
     pkgbuild = pkgbuild.replace(pkgVerPattern, version);
     srcinfo = srcinfo.replace(sha256sumsPattern, hex);
     srcinfo = srcinfo.replace(pkgVerPattern, version);
-    srcinfo = srcinfo.replace(sourcePattern, `source = spicetify-cli-${version}.tar.gz::https://github.com/spicetify/spicetify-cli/archive/${filename}`);
+    srcinfo = srcinfo.replace(sourcePattern, `source = cli-${version}.tar.gz::https://github.com/spicetify/cli/archive/${filename}`);
     fs.writeFileSync("spicetify-cli/PKGBUILD", pkgbuild);
     fs.writeFileSync("spicetify-cli/.SRCINFO", srcinfo);
     const status = await aGit.status();
