@@ -15,7 +15,7 @@ const downloadFile = async (source, targetFile) => {
   }
 }
 
-const doUpdate = (async () => {
+const doUpdate = async () => {
   const version = fetch(
     "https://api.github.com/repos/spicetify/cli/tags"
   )
@@ -99,6 +99,6 @@ const doUpdate = (async () => {
 
   console.log("Updating AUR...");
   updateAUR(version, filename, hex);
-})();
+};
 
-module.exports = doUpdate
+module.exports = doUpdate;

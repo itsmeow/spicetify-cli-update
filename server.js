@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const port = 8079;
-const doUpdate = require("./index.js")
+const doUpdate = require("./index.js");
 
 let lastTimestamp = 0;
 
