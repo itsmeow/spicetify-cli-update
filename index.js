@@ -1,18 +1,28 @@
-const exec = require("child_process").execSync;
 const crypto = require("crypto");
 const fs = require("fs");
 const simpleGit = require("simple-git");
 const fetch = require("sync-fetch");
-(async () => {
+const execSync = require("child_process").execSync;
+
+
+const downloadFile = async (source, targetFile) => {
+  try {
+    const networkResponse = await fetch(source);
+    const dataBuffer = await networkResponse.arrayBuffer();
+    fs.writeFileSync(targetFile, Buffer.from(dataBuffer));
+  } catch (error) {
+    console.error('Fetch operation failed:', error);
+  }
+}
+
+const doUpdate = (async () => {
   const version = fetch(
     "https://api.github.com/repos/spicetify/cli/tags"
   )
     .json()[0]
     .name.substring(1);
   let filename = `v${version}`;
-  exec(
-    `curl -Ls https://codeload.github.com/spicetify/cli/tar.gz/${filename} --output ${filename}.tar.gz`
-  );
+  await downloadFile(`https://codeload.github.com/spicetify/cli/tar.gz/${filename}`, `${filename}.tar.gz`)
   filename += ".tar.gz";
   console.log("Downloaded", filename);
   tar = fs.readFileSync(filename);
@@ -26,7 +36,7 @@ const fetch = require("sync-fetch");
   
   const updateAUR = async (version, filename, hex) => {
     if (!fs.existsSync("spicetify-cli"))
-      exec("git clone ssh://aur@aur.archlinux.org/spicetify-cli.git");
+      execSync("git clone ssh://aur@aur.archlinux.org/spicetify-cli.git");
     const aGit = simpleGit({ baseDir: "spicetify-cli" });
     await aGit.reset("hard", ["origin/master"]);
     await aGit.pull();
@@ -90,3 +100,5 @@ const fetch = require("sync-fetch");
   console.log("Updating AUR...");
   updateAUR(version, filename, hex);
 })();
+
+module.exports = doUpdate
