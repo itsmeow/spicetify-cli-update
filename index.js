@@ -68,7 +68,7 @@ const doUpdate = async () => {
     const pkgVerPattern = /(?<=pkgver ?= ?)[0-9a-z.+~_-]+/gi;
     const pkgRelPattern = /(?<=pkgrel ?= ?)\d+/g;
     const sourcePattern =
-      /source ?= ?cli-[0-9a-z.+~_-]+\.tar\.gz::https:\/\/github\.com\/spicetify\/cli\/archive\/v[0-9a-z.+~_-]+\.tar\.gz/gi;
+      /source ?= ?spicetify-cli-[0-9a-z.+~_-]+\.tar\.gz::https:\/\/github\.com\/spicetify\/cli\/archive\/v[0-9a-z.+~_-]+\.tar\.gz/gi;
     const sha256sumsPattern = /(?<=sha256sums ?= ?(\(')?)[0-9a-f]+(?=('\))?)/g;
 
     if (differs(pkgVerPattern, pkgbuild, version)) {
@@ -87,7 +87,7 @@ const doUpdate = async () => {
     srcinfo = srcinfo.replace(pkgRelPattern, "1");
     srcinfo = srcinfo.replace(
       sourcePattern,
-      `source = cli-${version}.tar.gz::https://github.com/spicetify/cli/archive/${filename}`,
+      `source = spicetify-cli-${version}.tar.gz::https://github.com/spicetify/cli/archive/${filename}`,
     );
 
     fs.writeFileSync(`${repoDir}/PKGBUILD`, pkgbuild);
